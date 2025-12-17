@@ -4,6 +4,7 @@
 import xlwings
 import numpy
 import time
+from ui_config import UI_MAP, FORMULA_CONFIG
 
 # calc number of "alive" neighbors for every cell
 # every cell has 8 neighbors, instead of visiting a specific cell and looking at its neighbors (x+1, y), (x-1, y)
@@ -34,6 +35,42 @@ def clear(grid):
     new_grid = numpy.where(grid, 0, grid)
     return new_grid
 
+def draw_ui(sheet):
+    if not UI_MAP:
+        return
+    
+    for color_rgb, cell_list in UI_MAP.items():
+        for cell_address in cell_list:
+            try:
+                current_color = sheet.range(cell_address).color
+                
+                if current_color != color_rgb:
+                    sheet.range(cell_address).color = color_rgb
+            except Exception:
+                pass
+            
+def draw_formula(sheet):
+    if not FORMULA_CONFIG:
+        return
+    for element in FORMULA_CONFIG:
+        try:
+            cell_range = sheet.range(element['range'])
+            
+            if 'h_align' in element:
+                cell_range.api.HorizontalAlignment = element['h_align']
+            if 'v_align' in element:
+                cell_range.api.VerticalAlignment = element['v_align']
+            if 'font_name' in element:
+                cell_range.font.name = element['font_name']
+            if 'font_size' in element:
+                cell_range.font.size = element['font_size']
+            if 'formula' in element:
+                cell_range.formula = element['formula']
+            if element.get('merge', False):
+                cell_range.merge()
+        except Exception as error:
+            print(f"[ERROR]   Could not apply formula to {element.get('range', 'unknown')}: {error}")
+            
 def main():
     try:
         wb = xlwings.Book('game.xlsx')
@@ -48,7 +85,7 @@ def main():
     # read the board state from excel
     # yea make sure u draw your figure or import a design first
     print("[STATUS]  Reading current board state...")
-    raw_data = sheet.range((2,2), (GRID_SIZE, GRID_SIZE)).value
+    raw_data = sheet.range((2,2), (GRID_SIZE + 1, GRID_SIZE + 1)).value
 
     # cleaning
     grid = numpy.array(raw_data)
@@ -56,6 +93,9 @@ def main():
     grid = grid.astype(int)
     grid[grid != 1] = 0
     
+    print("[STATUS]  Drawing UI...")
+    draw_ui(sheet)
+    draw_formula(sheet)
     print("[STATUS]  Engine running. Press Ctrl+C to stop.")
     
     try:

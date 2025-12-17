@@ -58,7 +58,7 @@ def main():
     start_r = 5
     start_c = 5
     
-    sheet.range((2,2), (GRID_SIZE,GRID_SIZE)).clear_contents()
+    sheet.range((2,2), (GRID_SIZE + 1,GRID_SIZE + 1)).clear_contents()
     
     coords = load_pattern(selected_file)
     for r, c in coords:
