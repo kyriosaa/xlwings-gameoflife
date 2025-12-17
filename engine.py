@@ -39,7 +39,7 @@ def main():
         wb = xlwings.Book('game.xlsx')
         sheet = wb.sheets[0]
     except FileNotFoundError:
-        print("[ERROR] pls open the game.xlsx file first")
+        print("[ERROR]   Pls open the game.xlsx file first.")
         return
     
     GRID_SIZE = 50 # 50x50
@@ -47,7 +47,7 @@ def main():
     
     # read the board state from excel
     # yea make sure u draw your figure or import a design first
-    print("Reading current board state")
+    print("[STATUS]  Reading current board state...")
     raw_data = sheet.range((1,1), (GRID_SIZE, GRID_SIZE)).value
 
     # cleaning
@@ -56,8 +56,7 @@ def main():
     grid = grid.astype(int)
     grid[grid != 1] = 0
     
-    print("Engine running")
-    print("--- Press Ctrl+C to stop ---")
+    print("[STATUS]  Engine running. Press Ctrl+C to stop.")
     
     try:
         while True:
@@ -67,7 +66,7 @@ def main():
     except KeyboardInterrupt:
         grid = clear(grid)
         sheet.range('A1').value = grid
-        print("Engine stopped")
+        print("[STATUS]  Engine stopped.")
 
 if __name__ == "__main__":
     main()
