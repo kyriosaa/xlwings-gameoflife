@@ -46,8 +46,10 @@ def draw_ui(sheet):
                 
                 if current_color != color_rgb:
                     sheet.range(cell_address).color = color_rgb
-            except Exception:
-                pass
+            except Exception as error:
+                print(f"[ERROR]   Could not apply UI to {cell_address}: {error}")
+                return False
+    return True
             
 def draw_formula(sheet):
     if not FORMULA_CONFIG:
@@ -70,6 +72,8 @@ def draw_formula(sheet):
                 cell_range.merge()
         except Exception as error:
             print(f"[ERROR]   Could not apply formula to {element.get('range', 'unknown')}: {error}")
+            return False
+    return True
             
 def main():
     try:
@@ -80,7 +84,7 @@ def main():
         return
     
     GRID_SIZE = 50 # 50x50
-    DELAY = 0.1
+    DELAY = 0.05
     
     # read the board state from excel
     # yea make sure u draw your figure or import a design first
@@ -94,8 +98,13 @@ def main():
     grid[grid != 1] = 0
     
     print("[STATUS]  Drawing UI...")
-    draw_ui(sheet)
-    draw_formula(sheet)
+    if not draw_ui(sheet):
+        print("[ERROR]   Failed to draw UI. Exiting...")
+        return
+    if not draw_formula(sheet):
+        print("[ERROR]   Failed to draw UI. Exiting...")
+        return
+    print("[SUCCESS] UI successfully drawn.")
     print("[STATUS]  Engine running. Press Ctrl+C to stop.")
     
     try:
