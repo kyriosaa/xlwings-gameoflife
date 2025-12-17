@@ -48,7 +48,7 @@ def main():
     # read the board state from excel
     # yea make sure u draw your figure or import a design first
     print("[STATUS]  Reading current board state...")
-    raw_data = sheet.range((1,1), (GRID_SIZE, GRID_SIZE)).value
+    raw_data = sheet.range((2,2), (GRID_SIZE, GRID_SIZE)).value
 
     # cleaning
     grid = numpy.array(raw_data)
@@ -60,12 +60,12 @@ def main():
     
     try:
         while True:
-            sheet.range('A1').value = grid
+            sheet.range('B2').value = grid
             grid = update(grid)
             time.sleep(DELAY)
     except KeyboardInterrupt:
         grid = clear(grid)
-        sheet.range('A1').value = grid
+        sheet.range('B2').value = grid
         print("[STATUS]  Engine stopped.")
 
 if __name__ == "__main__":
